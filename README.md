@@ -26,6 +26,8 @@ A conversational AI customer support agent for Vahan, an AI-enabled recruitment 
 - [Docker](https://www.docker.com/get-started) and [Docker Compose](https://docs.docker.com/compose/install/)
 - [OpenRouter API key](https://openrouter.ai/) for accessing DeepSeek V3
 
+- or you can simply use openai/deepseek api key
+
 ## Quick Start
 
 1. **Clone the repository**:
