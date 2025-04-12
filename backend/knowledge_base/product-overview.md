@@ -1,13 +1,14 @@
-# Vahan Overview
+# DataForge AI Overview
 
-Vahan is an AI-enabled livelihood platform founded in 2016 and headquartered in Bangalore, Karnataka. The company harnesses state-of-the-art AI-driven chatbot technology to empower businesses to expand their blue-collar workforce through streamlined recruitment, payroll, and staffing processes.
+DataForge AI is a comprehensive data analytics and machine learning platform that empowers businesses to transform raw data into actionable insights without requiring deep technical expertise. Our cloud-based solution combines powerful data processing capabilities with intuitive visualization tools and automated AI model development.
 
 ## Core Capabilities
 
-- **AI-Powered Recruitment**: Automate high-volume hiring of blue and grey collar workers
-- **Nationwide Reach**: Source candidates from across India, from the northern hills to the southern shores
-- **Payroll Management**: Comprehensive workforce staffing and payroll administration
-- **Single Platform Solution**: Manage recruitment, payroll, and staffing from one streamlined interface
-- **Strategic Partnerships**: Collaboration with Airtel for extensive hiring campaigns reaching 30 crore people
+- **Data Integration**: Connect to 100+ data sources with our pre-built connectors
+- **Automated Data Preparation**: Clean, transform, and enrich your data without coding
+- **AI Model Builder**: Create and deploy machine learning models with a no-code interface
+- **Interactive Dashboards**: Build stunning visualizations with our drag-and-drop designer
+- **Predictive Analytics**: Forecast trends and detect anomalies automatically
+- **Collaboration Tools**: Share insights and models across your organization
 
-Vahan specializes in facilitating blue-collar worker recruitment for leading companies in India's gig economy, including Zomato, Swiggy, Flipkart, Uber, Shadowfax, Rapido, Zepto, Dunzo, and Delhivery.
+DataForge AI is designed for business analysts, data scientists, and decision-makers who need to leverage the power of AI without the complexity of traditional data science workflows.

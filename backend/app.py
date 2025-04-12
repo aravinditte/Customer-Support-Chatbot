@@ -15,7 +15,7 @@ load_dotenv()
 # Initialize Flask app
 app = Flask(__name__)
 CORS(app)
-app.secret_key = os.getenv("SECRET_KEY", "vahan-support-secret-key")
+app.secret_key = os.getenv("SECRET_KEY", "dataforge-support-secret-key")
 
 # Clear any proxy environment variables that might be causing issues
 proxy_env_vars = [
@@ -74,19 +74,20 @@ def load_knowledge_base():
         # Create a default knowledge file if none exists
         if len(os.listdir(knowledge_base_dir)) == 0:
             with open(os.path.join(knowledge_base_dir, "product-overview.md"), "w") as f:
-                f.write("""# Vahan Overview
+                f.write("""# DataForge AI Overview
 
-Vahan is an AI-enabled livelihood platform founded in 2016 and headquartered in Bangalore, Karnataka. The company harnesses state-of-the-art AI-driven chatbot technology to empower businesses to expand their blue-collar workforce through streamlined recruitment, payroll, and staffing processes.
+DataForge AI is a comprehensive data analytics and machine learning platform that empowers businesses to transform raw data into actionable insights without requiring deep technical expertise. Our cloud-based solution combines powerful data processing capabilities with intuitive visualization tools and automated AI model development.
 
 ## Core Capabilities
 
-- **AI-Powered Recruitment**: Automate high-volume hiring of blue and grey collar workers
-- **Nationwide Reach**: Source candidates from across India, from the northern hills to the southern shores
-- **Payroll Management**: Comprehensive workforce staffing and payroll administration
-- **Single Platform Solution**: Manage recruitment, payroll, and staffing from one streamlined interface
-- **Strategic Partnerships**: Collaboration with Airtel for extensive hiring campaigns reaching 30 crore people
+- **Data Integration**: Connect to 100+ data sources with our pre-built connectors
+- **Automated Data Preparation**: Clean, transform, and enrich your data without coding
+- **AI Model Builder**: Create and deploy machine learning models with a no-code interface
+- **Interactive Dashboards**: Build stunning visualizations with our drag-and-drop designer
+- **Predictive Analytics**: Forecast trends and detect anomalies automatically
+- **Collaboration Tools**: Share insights and models across your organization
 
-Vahan specializes in facilitating blue-collar worker recruitment for leading companies in India's gig economy, including Zomato, Swiggy, Flipkart, Uber, Shadowfax, Rapido, Zepto, Dunzo, and Delhivery.""")
+DataForge AI is designed for business analysts, data scientists, and decision-makers who need to leverage the power of AI without the complexity of traditional data science workflows.""")
     
     for filename in os.listdir(knowledge_base_dir):
         if filename.endswith(".md"):
@@ -102,7 +103,7 @@ knowledge_base = load_knowledge_base()
 
 # Convert knowledge base to context for LLM
 def create_knowledge_context():
-    context = "You are an AI assistant for Vahan, an AI-enabled recruitment and staffing platform for blue-collar workers in India.\n\n"
+    context = "You are an AI assistant for DataForge AI, a SaaS platform for data analytics and machine learning.\n\n"
     for topic, content in knowledge_base.items():
         context += f"# {topic}\n{content}\n\n"
     return context
@@ -110,12 +111,12 @@ def create_knowledge_context():
 # Function to categorize query
 def categorize_query(query):
     categories = {
-        "company": ["what is", "vahan", "overview", "about", "founded", "headquarters"],
-        "recruitment": ["recruitment", "hiring", "candidates", "workers", "jobs", "positions"],
-        "staffing": ["staffing", "payroll", "management", "workforce"],
-        "technology": ["ai", "technology", "chatbot", "platform", "automation"],
-        "programs": ["mitra", "program", "leader", "app"],
-        "partnerships": ["partners", "companies", "zomato", "swiggy", "flipkart", "uber"]
+        "product": ["what is", "dataforge", "overview", "about", "platform"],
+        "features": ["features", "capabilities", "integration", "dashboard", "analytics", "ai", "models"],
+        "pricing": ["pricing", "cost", "subscription", "plan", "tier", "free", "trial"],
+        "use_cases": ["use case", "example", "industry", "business", "company", "scenario"],
+        "technical": ["technical", "api", "integration", "security", "data", "model", "algorithm"],
+        "support": ["help", "support", "contact", "assistance", "troubleshoot"]
     }
     
     query_lower = query.lower()
@@ -169,8 +170,8 @@ def get_ai_response(query, conversation_history):
         # Make request using OpenAI client
         completion = client.chat.completions.create(
             extra_headers={
-                "HTTP-Referer": "https://vahan.co",
-                "X-Title": "Vahan Support"
+                "HTTP-Referer": "https://dataforge.ai",
+                "X-Title": "DataForge AI Support"
             },
             model="deepseek/deepseek-v3-base:free",
             messages=messages,
@@ -187,27 +188,27 @@ def get_ai_response(query, conversation_history):
         
         # Fallback to hardcoded responses if API fails
         fallback_responses = {
-            "company": "Vahan is an AI-enabled recruitment and staffing platform founded in 2016 and headquartered in Bangalore. It specializes in blue-collar workforce recruitment for companies like Zomato, Swiggy, and Flipkart.",
-            "recruitment": "Vahan offers AI-powered recruitment for blue-collar workers, processing over 20,000 placements per month with an average fulfillment time of just 2-3 days.",
-            "staffing": "Vahan's workforce staffing solution includes end-to-end management, payroll administration, compliance management, and workforce analytics.",
-            "technology": "Vahan uses advanced AI chatbots and machine learning algorithms to automate the recruitment process, with mobile-first design optimized for blue-collar job seekers.",
-            "programs": "Vahan offers the Mitra program, an all-in-one delivery job search app, and the Mitra Leader program for creating leaders in recruitment.",
-            "partnerships": "Vahan partners with major companies in India's gig economy, including Zomato, Swiggy, Flipkart, Uber, Shadowfax, Rapido, Zepto, Dunzo, and Delhivery."
+            "product": "DataForge AI is a comprehensive data analytics and machine learning platform that empowers businesses to transform raw data into actionable insights without requiring deep technical expertise.",
+            "features": "DataForge AI offers data integration with 100+ sources, automated data preparation, AI model building, interactive dashboards, predictive analytics, and collaboration tools.",
+            "pricing": "DataForge AI offers three pricing tiers: Starter ($49/month), Professional ($149/month), and Enterprise (custom pricing). All plans include a 14-day free trial.",
+            "use_cases": "DataForge AI is used for sales forecasting, customer segmentation, inventory optimization, predictive maintenance, and marketing campaign analysis across various industries.",
+            "technical": "DataForge AI provides REST APIs, webhooks, SSO integration, and enterprise-grade security with SOC 2 Type II compliance.",
+            "support": "DataForge AI offers 24/7 support via chat, email, and phone for all paid plans. Our knowledge base and community forum are available to all users."
         }
         
         query_lower = query.lower()
         for category, keywords in {
-            "company": ["vahan", "company", "about", "founded"],
-            "recruitment": ["recruitment", "hiring", "candidates"],
-            "staffing": ["staffing", "payroll", "management"],
-            "technology": ["ai", "technology", "chatbot"],
-            "programs": ["mitra", "program", "app"],
-            "partnerships": ["partners", "companies", "zomato"]
+            "product": ["dataforge", "what is", "about", "overview"],
+            "features": ["features", "capabilities", "integration", "dashboard"],
+            "pricing": ["pricing", "cost", "subscription", "plan", "tier"],
+            "use_cases": ["use case", "example", "industry", "business"],
+            "technical": ["technical", "api", "integration", "security"],
+            "support": ["help", "support", "contact", "assistance"]
         }.items():
             if any(keyword in query_lower for keyword in keywords):
                 return fallback_responses[category], True
         
-        return "I'm sorry, I'm having trouble processing your request. Please try again or contact our support team.", True
+        return "I'm sorry, I'm having trouble processing your request. Please try again or contact our support team at support@dataforge.ai.", True
 
 # Routes
 @app.route('/api/chat', methods=['POST'])
