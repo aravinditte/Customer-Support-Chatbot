@@ -1,3 +1,6 @@
+from openai import OpenAI
+from openai import DefaultHttpxClient
+import os
 from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 import os
@@ -5,20 +8,28 @@ import json
 import datetime
 import sqlite3
 import markdown
-import requests
 from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
+# Clear proxy environment variables
+proxy_env_vars = [
+    'HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy', 
+    'NO_PROXY', 'no_proxy'
+]
+for var in proxy_env_vars:
+    if var in os.environ:
+        del os.environ[var]
 
-app = Flask(__name__)
-CORS(app)
-app.secret_key = os.getenv("SECRET_KEY", "cloudflow-analytics-secret-key")
-
-# Initialize OpenRouter API key for DeepSeek
+# Initialize OpenRouter client with OpenAI SDK
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 if not OPENROUTER_API_KEY:
-    raise ValueError("OPENROUTER_API_KEY environment variable is not set. Please set it in your .env file.")
+    raise ValueError("OPENROUTER_API_KEY environment variable is not set")
+
+client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key=OPENROUTER_API_KEY,
+    http_client=DefaultHttpxClient()
+)
+
 
 # Database setup
 def get_db_connection():
@@ -129,74 +140,59 @@ def update_satisfaction(chat_id, rating):
     conn.commit()
     conn.close()
 
-# Function to get response from DeepSeek via OpenRouter
+# Function to get response using OpenAI client for OpenRouter
 def get_ai_response(query, conversation_history):
     try:
         knowledge_context = create_knowledge_context()
         
-        # Prepare messages including system context and conversation history
+        # Format messages for the API
         messages = [
             {"role": "system", "content": knowledge_context}
         ]
         
-        # Add conversation history (limited to last few exchanges)
+        # Add conversation history
         for msg in conversation_history:
             messages.append({"role": "user" if msg["type"] == "user" else "assistant", "content": msg["content"]})
         
         # Add current query
         messages.append({"role": "user", "content": query})
         
-        # Make request to OpenRouter API with DeepSeek model
-        url = "https://openrouter.ai/api/v1/chat/completions"
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-            "HTTP-Referer": "https://cloudflow-analytics.com",  # Replace with your actual domain
-            "X-Title": "CloudFlow Analytics Support"  # Your app name
-        }
-        
-        data = {
-            "model": "deepseek/deepseek-chat-v3-0324:free",  # Free version of DeepSeek V3
-            "messages": messages,
-            "max_tokens": 500,
-            "temperature": 0.7,
-        }
-        
         print(f"Sending request to OpenRouter API - Query: '{query}'")
-        print(f"Messages context length: {len(str(messages))} characters")
         
-        response = requests.post(url, headers=headers, json=data)
+        # Make request using OpenAI client
+        completion = client.chat.completions.create(
+            extra_headers={
+                "HTTP-Referer": "https://cloudflow-analytics.com",
+                "X-Title": "CloudFlow Analytics Support"
+            },
+            model="deepseek/deepseek-v3-base:free",
+            messages=messages,
+            max_tokens=500,
+            temperature=0.7
+        )
         
-        print(f"OpenRouter API Status Code: {response.status_code}")
-        
-        if response.status_code == 200:
-            result = response.json()
-            print(f"OpenRouter API Response (first 100 chars): {str(result)[:100]}...")
-            return result["choices"][0]["message"]["content"], False
-        else:
-            print(f"Error from OpenRouter API: {response.text}")
-            
-            # Try with a simpler request as fallback
-            if len(messages) > 2:
-                print("Retrying with simplified context...")
-                simplified_messages = [
-                    {"role": "system", "content": "You are an AI assistant for CloudFlow Analytics, a SaaS platform for data analytics."},
-                    {"role": "user", "content": query}
-                ]
-                
-                data["messages"] = simplified_messages
-                response = requests.post(url, headers=headers, json=data)
-                
-                if response.status_code == 200:
-                    result = response.json()
-                    print(f"Simplified Response (first 100 chars): {str(result)[:100]}...")
-                    return result["choices"][0]["message"]["content"], False
-            
-            # If still failing, return error message
-            return "I'm sorry, I'm having trouble processing your request. Please try again later.", True
+        response_text = completion.choices[0].message.content
+        print(f"Response received: {response_text[:100]}...")
+        return response_text, False
             
     except Exception as e:
         print(f"Error getting AI response: {e}")
+        
+        # Fallback to hardcoded responses if API fails
+        fallback_responses = {
+            "features": "CloudFlow Analytics offers several key features including Data Integration Hub, Automated Processing Pipeline, Interactive Dashboard Builder, AI Insights Engine, Collaboration Tools, and Advanced Security.",
+            "pricing": "CloudFlow Analytics has three pricing tiers: Starter ($29/month), Professional ($99/month), and Enterprise ($499/month). All plans include a 14-day free trial.",
+            "trial": "Yes, CloudFlow Analytics offers a 14-day free trial on all plans. No credit card is required to start."
+        }
+        
+        query_lower = query.lower()
+        if "feature" in query_lower:
+            return fallback_responses["features"], True
+        elif "price" in query_lower or "cost" in query_lower or "plan" in query_lower:
+            return fallback_responses["pricing"], True
+        elif "trial" in query_lower or "free" in query_lower:
+            return fallback_responses["trial"], True
+        
         return "I'm sorry, I'm having trouble processing your request. Please try again or contact our support team.", True
 
 # Routes
