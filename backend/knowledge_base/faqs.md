@@ -2,47 +2,41 @@
 
 ## General Questions
 
-### What is CloudFlow Analytics?
-CloudFlow Analytics is a SaaS platform that helps businesses transform raw data into actionable insights through automated data processing, interactive visualization, and AI-powered analytics.
+### What is Vahan?
+Vahan is an AI-enabled recruitment and staffing platform that helps businesses scale their blue-collar workforce through automated hiring, payroll management, and staffing solutions.
 
-### Who is CloudFlow Analytics for?
-CloudFlow Analytics is designed for businesses of all sizes that want to make data-driven decisions. It's particularly valuable for teams in marketing, sales, finance, operations, and executive leadership.
+### When was Vahan founded?
+Vahan was founded in 2016 and is headquartered in Bangalore, Karnataka, India.
 
-### Do I need technical skills to use CloudFlow Analytics?
-No, CloudFlow Analytics is designed with a user-friendly interface that doesn't require coding skills. However, users with SQL knowledge can leverage advanced features for custom queries.
+### What types of workers does Vahan help recruit?
+Vahan specializes in blue-collar and grey-collar workforce recruitment, particularly for delivery, logistics, and service industry positions.
 
-## Account & Billing
+## Services & Technology
 
-### How do I start a free trial?
-Sign up at [cloudflow.example.com](https://cloudflow.example.com) and you'll automatically begin a 14-day free trial of the Professional plan. No credit card is required for the trial.
+### How does Vahan's AI technology work?
+Vahan uses AI-driven chatbots to engage with potential candidates through messaging apps, automatically screening and matching them with appropriate job opportunities based on their qualifications and preferences.
 
-### Can I change plans later?
-Yes, you can upgrade or downgrade your plan at any time. Upgrades take effect immediately, while downgrades take effect at the end of your billing cycle.
+### What is the average time to fill positions through Vahan?
+Vahan typically fulfills hiring requirements within 2-3 days, which is approximately 20% faster than industry standards.
 
-### How does billing work?
-We offer monthly and annual billing options. Annual billing includes a 15% discount. You can pay by credit card or, for Enterprise plans, by invoice.
+### Can Vahan handle large-volume hiring needs?
+Yes, Vahan processes over 20,000 placements per month and is specifically designed for high-volume recruitment scenarios.
 
-## Features & Usage
+### Does Vahan offer payroll services?
+Yes, Vahan's Workforce Staffing service includes complete payroll administration along with recruitment and ongoing workforce management.
 
-### How many data sources can I connect to?
-All plans support unlimited connections to our 50+ pre-built data source integrations. Custom connectors are available as add-ons.
+## Programs
 
-### Can I export data from CloudFlow Analytics?
-Yes, you can export data in various formats including CSV, Excel, PDF, and images of visualizations.
+### What is the Mitra program?
+Mitra is Vahan's all-in-one delivery job search app that connects job seekers with top delivery companies across India through a streamlined 2-minute application process.
 
-### Is there a mobile app?
-Yes, CloudFlow Analytics offers mobile apps for iOS and Android. You can also access mobile-optimized dashboards through your device's web browser.
+### What is the Mitra Leader program?
+Mitra Leader is a program designed to create recruitment leaders by providing professional tools for tracking candidates, monitoring performance, and managing the entire recruitment process efficiently.
 
-### Can I embed dashboards in other applications?
-Yes, Professional and Enterprise plans support dashboard embedding using secure iframe embedding or our JavaScript SDK.
+## Business Partnership
 
-## Security & Privacy
+### Which companies work with Vahan?
+Vahan works with leading companies in India's gig economy, including Zomato, Swiggy, Flipkart, Uber, Shadowfax, Rapido, Zepto, Dunzo, and Delhivery.
 
-### Where is my data stored?
-Your data is stored in secure cloud infrastructure with regional options including US, EU, and Asia Pacific.
-
-### Who can access my data?
-Only authorized users in your account can access your data. CloudFlow employees do not access customer data except for support purposes with explicit permission.
-
-### What happens to my data if I cancel?
-You can export your data before canceling. After cancellation, data is retained for 30 days before being permanently deleted.
+### How can my business partner with Vahan?
+Businesses can contact Vahan through their website to discuss high-volume recruitment or staffing needs. The Vahan team will then get in touch to explore partnership opportunities.

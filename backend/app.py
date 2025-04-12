@@ -13,9 +13,9 @@ import httpx
 load_dotenv()
 
 # Initialize Flask app
-app = Flask(__name__)  # Make sure this is defined before any @app.route decorators
+app = Flask(__name__)
 CORS(app)
-app.secret_key = os.getenv("SECRET_KEY", "cloudflow-analytics-secret-key")
+app.secret_key = os.getenv("SECRET_KEY", "vahan-support-secret-key")
 
 # Clear any proxy environment variables that might be causing issues
 proxy_env_vars = [
@@ -74,20 +74,19 @@ def load_knowledge_base():
         # Create a default knowledge file if none exists
         if len(os.listdir(knowledge_base_dir)) == 0:
             with open(os.path.join(knowledge_base_dir, "product-overview.md"), "w") as f:
-                f.write("""# CloudFlow Analytics Overview
+                f.write("""# Vahan Overview
 
-CloudFlow Analytics is a comprehensive data analytics platform designed to help businesses of all sizes transform their raw data into actionable insights. Our cloud-based solution combines powerful data processing capabilities with intuitive visualization tools and AI-powered analytics.
+Vahan is an AI-enabled livelihood platform founded in 2016 and headquartered in Bangalore, Karnataka. The company harnesses state-of-the-art AI-driven chatbot technology to empower businesses to expand their blue-collar workforce through streamlined recruitment, payroll, and staffing processes.
 
 ## Core Capabilities
 
-- **Connect** to over 50 data sources with our pre-built connectors
-- **Process** data through our no-code transformation pipeline
-- **Visualize** insights with our interactive dashboard builder
-- **Discover** hidden patterns with our AI Insights Engine
-- **Collaborate** with team members through sharing and commenting features
-- **Secure** your data with enterprise-grade security measures
+- **AI-Powered Recruitment**: Automate high-volume hiring of blue and grey collar workers
+- **Nationwide Reach**: Source candidates from across India, from the northern hills to the southern shores
+- **Payroll Management**: Comprehensive workforce staffing and payroll administration
+- **Single Platform Solution**: Manage recruitment, payroll, and staffing from one streamlined interface
+- **Strategic Partnerships**: Collaboration with Airtel for extensive hiring campaigns reaching 30 crore people
 
-CloudFlow Analytics empowers your team to make data-driven decisions without requiring advanced technical skills.""")
+Vahan specializes in facilitating blue-collar worker recruitment for leading companies in India's gig economy, including Zomato, Swiggy, Flipkart, Uber, Shadowfax, Rapido, Zepto, Dunzo, and Delhivery.""")
     
     for filename in os.listdir(knowledge_base_dir):
         if filename.endswith(".md"):
@@ -103,7 +102,7 @@ knowledge_base = load_knowledge_base()
 
 # Convert knowledge base to context for LLM
 def create_knowledge_context():
-    context = "You are an AI assistant for CloudFlow Analytics, a SaaS platform for data analytics.\n\n"
+    context = "You are an AI assistant for Vahan, an AI-enabled recruitment and staffing platform for blue-collar workers in India.\n\n"
     for topic, content in knowledge_base.items():
         context += f"# {topic}\n{content}\n\n"
     return context
@@ -111,11 +110,12 @@ def create_knowledge_context():
 # Function to categorize query
 def categorize_query(query):
     categories = {
-        "product": ["what is", "product", "cloudflow", "overview", "features"],
-        "pricing": ["price", "cost", "subscription", "plan", "tier", "billing"],
-        "technical": ["api", "integration", "connect", "data source", "dashboard"],
-        "account": ["login", "account", "password", "sign up", "registration"],
-        "support": ["help", "support", "contact", "assistance", "troubleshoot"]
+        "company": ["what is", "vahan", "overview", "about", "founded", "headquarters"],
+        "recruitment": ["recruitment", "hiring", "candidates", "workers", "jobs", "positions"],
+        "staffing": ["staffing", "payroll", "management", "workforce"],
+        "technology": ["ai", "technology", "chatbot", "platform", "automation"],
+        "programs": ["mitra", "program", "leader", "app"],
+        "partnerships": ["partners", "companies", "zomato", "swiggy", "flipkart", "uber"]
     }
     
     query_lower = query.lower()
@@ -169,8 +169,8 @@ def get_ai_response(query, conversation_history):
         # Make request using OpenAI client
         completion = client.chat.completions.create(
             extra_headers={
-                "HTTP-Referer": "https://cloudflow-analytics.com",
-                "X-Title": "CloudFlow Analytics Support"
+                "HTTP-Referer": "https://vahan.co",
+                "X-Title": "Vahan Support"
             },
             model="deepseek/deepseek-v3-base:free",
             messages=messages,
@@ -187,18 +187,25 @@ def get_ai_response(query, conversation_history):
         
         # Fallback to hardcoded responses if API fails
         fallback_responses = {
-            "features": "CloudFlow Analytics offers several key features including Data Integration Hub, Automated Processing Pipeline, Interactive Dashboard Builder, AI Insights Engine, Collaboration Tools, and Advanced Security.",
-            "pricing": "CloudFlow Analytics has three pricing tiers: Starter ($29/month), Professional ($99/month), and Enterprise ($499/month). All plans include a 14-day free trial.",
-            "trial": "Yes, CloudFlow Analytics offers a 14-day free trial on all plans. No credit card is required to start."
+            "company": "Vahan is an AI-enabled recruitment and staffing platform founded in 2016 and headquartered in Bangalore. It specializes in blue-collar workforce recruitment for companies like Zomato, Swiggy, and Flipkart.",
+            "recruitment": "Vahan offers AI-powered recruitment for blue-collar workers, processing over 20,000 placements per month with an average fulfillment time of just 2-3 days.",
+            "staffing": "Vahan's workforce staffing solution includes end-to-end management, payroll administration, compliance management, and workforce analytics.",
+            "technology": "Vahan uses advanced AI chatbots and machine learning algorithms to automate the recruitment process, with mobile-first design optimized for blue-collar job seekers.",
+            "programs": "Vahan offers the Mitra program, an all-in-one delivery job search app, and the Mitra Leader program for creating leaders in recruitment.",
+            "partnerships": "Vahan partners with major companies in India's gig economy, including Zomato, Swiggy, Flipkart, Uber, Shadowfax, Rapido, Zepto, Dunzo, and Delhivery."
         }
         
         query_lower = query.lower()
-        if "feature" in query_lower:
-            return fallback_responses["features"], True
-        elif "price" in query_lower or "cost" in query_lower or "plan" in query_lower:
-            return fallback_responses["pricing"], True
-        elif "trial" in query_lower or "free" in query_lower:
-            return fallback_responses["trial"], True
+        for category, keywords in {
+            "company": ["vahan", "company", "about", "founded"],
+            "recruitment": ["recruitment", "hiring", "candidates"],
+            "staffing": ["staffing", "payroll", "management"],
+            "technology": ["ai", "technology", "chatbot"],
+            "programs": ["mitra", "program", "app"],
+            "partnerships": ["partners", "companies", "zomato"]
+        }.items():
+            if any(keyword in query_lower for keyword in keywords):
+                return fallback_responses[category], True
         
         return "I'm sorry, I'm having trouble processing your request. Please try again or contact our support team.", True
 

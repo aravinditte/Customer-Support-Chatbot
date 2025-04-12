@@ -1,14 +1,13 @@
-# CloudFlow Analytics Overview
+# Vahan Overview
 
-CloudFlow Analytics is a comprehensive data analytics platform designed to help businesses of all sizes transform their raw data into actionable insights. Our cloud-based solution combines powerful data processing capabilities with intuitive visualization tools and AI-powered analytics.
+Vahan is an AI-enabled livelihood platform founded in 2016 and headquartered in Bangalore, Karnataka. The company harnesses state-of-the-art AI-driven chatbot technology to empower businesses to expand their blue-collar workforce through streamlined recruitment, payroll, and staffing processes.
 
 ## Core Capabilities
 
-- **Connect** to over 50 data sources with our pre-built connectors
-- **Process** data through our no-code transformation pipeline
-- **Visualize** insights with our interactive dashboard builder
-- **Discover** hidden patterns with our AI Insights Engine
-- **Collaborate** with team members through sharing and commenting features
-- **Secure** your data with enterprise-grade security measures
+- **AI-Powered Recruitment**: Automate high-volume hiring of blue and grey collar workers
+- **Nationwide Reach**: Source candidates from across India, from the northern hills to the southern shores
+- **Payroll Management**: Comprehensive workforce staffing and payroll administration
+- **Single Platform Solution**: Manage recruitment, payroll, and staffing from one streamlined interface
+- **Strategic Partnerships**: Collaboration with Airtel for extensive hiring campaigns reaching 30 crore people
 
-CloudFlow Analytics empowers your team to make data-driven decisions without requiring advanced technical skills.
+Vahan specializes in facilitating blue-collar worker recruitment for leading companies in India's gig economy, including Zomato, Swiggy, Flipkart, Uber, Shadowfax, Rapido, Zepto, Dunzo, and Delhivery.
