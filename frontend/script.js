@@ -1,4 +1,6 @@
 let sessionId = generateSessionId();
+// Store session ID in localStorage for history page
+localStorage.setItem('chatSessionId', sessionId);
 let lastChatId = null;
 
 // Initialize the chat interface

@@ -292,5 +292,32 @@ def analytics():
         'satisfaction': satisfaction['avg_satisfaction']
     })
 
+@app.route('/api/chat-history', methods=['GET'])
+def chat_history():
+    session_id = request.args.get('session_id')
+    
+    if not session_id:
+        return jsonify({'error': 'Session ID is required'}), 400
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # Get chat history for the session
+    cursor.execute("""
+        SELECT id, query, response, category, is_fallback, satisfaction, 
+               datetime(timestamp, 'localtime') as formatted_time
+        FROM chat_analytics 
+        WHERE session_id = ? 
+        ORDER BY timestamp DESC
+    """, (session_id,))
+    
+    history = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+    
+    return jsonify({
+        'session_id': session_id,
+        'history': history
+    })
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

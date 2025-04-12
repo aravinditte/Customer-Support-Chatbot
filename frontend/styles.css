@@ -105,6 +105,23 @@ body {
     color: #0a2540;
 }
 
+.history-link {
+    color: #0a84ff;
+    text-decoration: none;
+    margin-right: 15px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+}
+
+.history-link i {
+    margin-right: 5px;
+}
+
+.history-link:hover {
+    text-decoration: underline;
+}
+
 .chat-container {
     flex: 1;
     display: flex;
@@ -304,6 +321,22 @@ body {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+}
+
+.refresh-button {
+    background-color: #0a84ff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 15px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+}
+
+.refresh-button i {
+    margin-right: 5px;
 }
 
 @media (max-width: 768px) {

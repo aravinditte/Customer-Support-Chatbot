@@ -166,4 +166,12 @@ If the chatbot fails to answer questions about DataForge AI:
 3. Add more detailed documentation files covering specific topics
 
 
+## Future Improvements
+
+- **Multi-language Support**: Add capability to respond in different languages
+- **Voice Interface**: Integrate speech-to-text and text-to-speech capabilities
+- **Rich Responses**: Support images and formatted text in responses
+- **Knowledge Base Expansion**: Automated ingestion of documentation updates
+- **Advanced Analytics**: Visualization dashboard for tracking chatbot performance
+
 This project was created as a demonstration of AI-powered customer support for a fictional SaaS product.

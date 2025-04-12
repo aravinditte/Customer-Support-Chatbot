@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataForge AI - Chat History</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .history-container {
+            padding: 20px;
+        }
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .session-info {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .session-id {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .session-stats {
+            display: flex;
+            gap: 20px;
+        }
+        .stat-item {
+            flex: 1;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0a84ff;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+        .chat-history {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .chat-entry {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+        .chat-entry:last-child {
+            border-bottom: none;
+        }
+        .chat-time {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+        .chat-question {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .chat-response {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .chat-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+        }
+        .chat-category {
+            background-color: #e6f3ff;
+            padding: 3px 8px;
+            border-radius: 12px;
+        }
+        .chat-feedback {
+            display: flex;
+            align-items: center;
+        }
+        .feedback-positive {
+            color: #34A853;
+        }
+        .feedback-negative {
+            color: #EA4335;
+        }
+        .feedback-none {
+            color: #999;
+            font-style: italic;
+        }
+        .fallback-indicator {
+            background-color: #ffebee;
+            color: #d32f2f;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        .no-history {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h1>DataForge AI</h1>
+            </div>
+            <div class="menu">
+                <a href="index.html"><i class="fas fa-comments"></i> Support Chat</a>
+                <a href="#" class="nav-link"><i class="fas fa-book"></i> Documentation</a>
+                <a href="analytics.html"><i class="fas fa-chart-bar"></i> Analytics</a>
+                <a href="history.html" class="active"><i class="fas fa-history"></i> Chat History</a>
+                <a href="#" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="header">
+                <h2>Chat History</h2>
+                <button id="newChatButton" class="refresh-button" onclick="window.location.href='index.html'">
+                    <i class="fas fa-plus"></i> New Chat
+                </button>
+            </div>
+            
+            <div class="history-container">
+                <div class="session-info">
+                    <div class="session-id" id="sessionIdDisplay">Session ID: Loading...</div>
+                    <div class="session-stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="totalMessages">-</div>
+                            <div class="stat-label">Messages</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="satisfactionRate">-</div>
+                            <div class="stat-label">Satisfaction</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="fallbackRate">-</div>
+                            <div class="stat-label">Fallbacks</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-history" id="chatHistoryContainer">
+                    <div class="no-history" id="noHistoryMessage">
+                        Loading chat history...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Get session ID from localStorage or URL parameter
+        let sessionId = localStorage.getItem('chatSessionId');
+        
+        // If no session ID in localStorage, check URL parameters
+        if (!sessionId) {
+            const urlParams = new URLSearchParams(window.location.search);
+            sessionId = urlParams.get('session_id');
+        }
+        
+        // If still no session ID, redirect to chat page
+        if (!sessionId) {
+            alert('No session ID found. Redirecting to chat page.');
+            window.location.href = 'index.html';
+        }
+        
+        // Display session ID
+        document.getElementById('sessionIdDisplay').textContent = `Session ID: ${sessionId}`;
+        
+        // Load chat history
+        async function loadChatHistory() {
+            try {
+                const response = await fetch(`http://localhost:5000/api/chat-history?session_id=${sessionId}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                displayChatHistory(data.history);
+                updateSessionStats(data.history);
+                
+            } catch (error) {
+                console.error('Error loading chat history:', error);
+                document.getElementById('noHistoryMessage').textContent = 'Error loading chat history. Please try again.';
+            }
+        }
+        
+        // Display chat history
+        function displayChatHistory(history) {
+            const container = document.getElementById('chatHistoryContainer');
+            
+            if (history.length === 0) {
+                document.getElementById('noHistoryMessage').textContent = 'No chat history found for this session.';
+                return;
+            }
+            
+            // Clear loading message
+            container.innerHTML = '';
+            
+            // Add each chat entry
+            history.forEach(entry => {
+                const chatEntry = document.createElement('div');
+                chatEntry.className = 'chat-entry';
+                
+                // Format timestamp
+                const timestamp = new Date(entry.formatted_time);
+                const formattedTime = timestamp.toLocaleString();
+                
+                // Create feedback display
+                let feedbackHtml = '';
+                if (entry.satisfaction === 1) {
+                    feedbackHtml = '<span class="feedback-positive"><i class="fas fa-thumbs-up"></i> Helpful</span>';
+                } else if (entry.satisfaction === 0) {
+                    feedbackHtml = '<span class="feedback-negative"><i class="fas fa-thumbs-down"></i> Not Helpful</span>';
+                } else {
+                    feedbackHtml = '<span class="feedback-none">No Feedback</span>';
+                }
+                
+                // Format category name
+                const category = entry.category.split('_')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ');
+                
+                chatEntry.innerHTML = `
+                    <div class="chat-time">${formattedTime}</div>
+                    <div class="chat-question">
+                        Q: ${entry.query}
+                        ${entry.is_fallback ? '<span class="fallback-indicator">Fallback</span>' : ''}
+                    </div>
+                    <div class="chat-response">
+                        ${entry.response}
+                    </div>
+                    <div class="chat-meta">
+                        <span class="chat-category">${category}</span>
+                        <span class="chat-feedback">${feedbackHtml}</span>
+                    </div>
+                `;
+                
+                container.appendChild(chatEntry);
+            });
+        }
+        
+        // Update session statistics
+        function updateSessionStats(history) {
+            // Total messages
+            document.getElementById('totalMessages').textContent = history.length;
+            
+            // Satisfaction rate
+            const feedbackCount = history.filter(entry => entry.satisfaction !== null).length;
+            const positiveCount = history.filter(entry => entry.satisfaction === 1).length;
+            const satisfactionRate = feedbackCount > 0 ? 
+                Math.round((positiveCount / feedbackCount) * 100) + '%' : 'N/A';
+            document.getElementById('satisfactionRate').textContent = satisfactionRate;
+            
+            // Fallback rate
+            const fallbackCount = history.filter(entry => entry.is_fallback).length;
+            const fallbackRate = history.length > 0 ?
+                Math.round((fallbackCount / history.length) * 100) + '%' : '0%';
+            document.getElementById('fallbackRate').textContent = fallbackRate;
+        }
+        
+        // Handle navigation links
+        function setupNavigationLinks() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Create and show modal
+                    const modal = document.createElement('div');
+                    modal.className = 'modal';
+                    modal.style.display = 'flex';
+                    
+                    const modalContent = document.createElement('div');
+                    modalContent.className = 'modal-content';
+                    
+                    const message = document.createElement('p');
+                    message.textContent = 'This feature is not available in the demo version.';
+                    
+                    const closeButton = document.createElement('button');
+                    closeButton.className = 'modal-close';
+                    closeButton.textContent = 'Close';
+                    closeButton.addEventListener('click', function() {
+                        document.body.removeChild(modal);
+                    });
+                    
+                    modalContent.appendChild(message);
+                    modalContent.appendChild(closeButton);
+                    modal.appendChild(modalContent);
+                    
+                    document.body.appendChild(modal);
+                });
+            });
+        }
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadChatHistory();
+            setupNavigationLinks();
+        });
+    </script>
+</body>
+</html>
