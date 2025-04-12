@@ -1,6 +1,3 @@
-from openai import OpenAI
-from openai import DefaultHttpxClient
-import os
 from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 import os
@@ -8,9 +5,19 @@ import json
 import datetime
 import sqlite3
 import markdown
+from openai import OpenAI
 from dotenv import load_dotenv
+import httpx
 
-# Clear proxy environment variables
+# Load environment variables
+load_dotenv()
+
+# Initialize Flask app
+app = Flask(__name__)  # Make sure this is defined before any @app.route decorators
+CORS(app)
+app.secret_key = os.getenv("SECRET_KEY", "cloudflow-analytics-secret-key")
+
+# Clear any proxy environment variables that might be causing issues
 proxy_env_vars = [
     'HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy', 
     'NO_PROXY', 'no_proxy'
@@ -24,12 +31,12 @@ OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 if not OPENROUTER_API_KEY:
     raise ValueError("OPENROUTER_API_KEY environment variable is not set")
 
+# Initialize client with custom HTTP client to avoid proxy issues
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
     api_key=OPENROUTER_API_KEY,
-    http_client=DefaultHttpxClient()
+    http_client=httpx.Client(proxies=None)  # Explicitly disable proxies
 )
-
 
 # Database setup
 def get_db_connection():
