@@ -1,152 +1,176 @@
-# Customer-Support-Chatbot
+# Vahan Support Chatbot
 
-# CloudFlow Analytics Support Chatbot
+A conversational AI customer support agent for Vahan, an AI-enabled recruitment and staffing platform for blue-collar workers in India. This implementation uses the DeepSeek API via OpenRouter to provide context-aware responses based on a comprehensive knowledge base.
 
-An AI-powered customer support chatbot for the fictional CloudFlow Analytics SaaS platform. The chatbot uses OpenAI's GPT model to provide context-aware responses based on a comprehensive knowledge base.
+![Vahan Support Chatbot](https://i.imgur.com/example-screenshot.png)
 
 ## Features
 
-- **Conversational AI Interface**: Natural language understanding for product inquiries
-- **Knowledge Base Integration**: Accurate responses based on product documentation
-- **Context Awareness**: Remembers conversation history for contextual responses
-- **Fallback Mechanism**: Graceful handling of queries outside its knowledge
-- **Analytics Dashboard**: Tracks query types and user satisfaction
-- **Mobile Responsive Design**: Works on all device sizes
+- **Natural Language Understanding**: Interprets user questions about Vahan using DeepSeek's large language model
+- **Knowledge Base Integration**: Provides accurate responses based on comprehensive product documentation
+- **Context-Aware Conversations**: Maintains conversation history for more relevant follow-up responses
+- **Fallback Mechanism**: Gracefully handles questions outside its knowledge domain
+- **User Feedback Collection**: Thumbs up/down ratings to track response quality
+- **Analytics Dashboard**: Track query types, satisfaction rates, and fallback frequency
+- **Responsive Design**: Works seamlessly on both desktop and mobile devices
 
 ## Technology Stack
 
-- **Frontend**: HTML, CSS, JavaScript
-- **Backend**: Python, Flask
-- **AI**: Openrouter
-- **Database**: SQLite for analytics tracking
-- **Deployment**: Docker for easy setup
+- **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
+- **Backend**: Python, Flask, SQLite
+- **AI/LLM**: DeepSeek V3 via OpenRouter API
+- **Deployment**: Docker, Docker Compose
 
-## System Architecture
+## Prerequisites
 
-The system follows a client-server architecture:
+- [Docker](https://www.docker.com/get-started) and [Docker Compose](https://docs.docker.com/compose/install/)
+- [OpenRouter API key](https://openrouter.ai/) for accessing DeepSeek V3
 
-1. **Frontend Interface**:
-   - Single-page application with responsive design
-   - Real-time chat interface with typing indicators
-   - User feedback collection (thumbs up/down)
+## Quick Start
 
-2. **Backend API**:
-   - RESTful API endpoints for chat functionality
-   - Session management for conversation context
-   - OpenAI integration for natural language understanding
-   - Analytics collection and reporting
+1. **Clone the repository**:
+   git clone https://github.com/aravinditte/Customer-Support-Chatbot.git
+   cd Customer-Support-Chatbot
 
-3. **Knowledge Base**:
-   - Markdown-based documentation for product information
-   - Organized by topics for easy maintenance
-   - Converted to context for the LLM
+2. **Configure environment variables**:
+Create a `.env` file in the root directory:
+   OPENROUTER_API_KEY=your_openrouter_api_key_here
+   SECRET_KEY=your_random_secret_key_here  //you can keep this blank
 
-## Setup Instructions
 
-### Prerequisites
-- Docker and Docker Compose installed
-- OpenAI API key
+3. **Start the application**:
+   docker-compose build
+   docker-compose up
 
-### Environment Setup
-1. Clone this repository
-2. Create a `.env` file in the root directory with:
+4. **Access the chatbot**:
+Open your browser and navigate to `http://localhost`
 
-OPENAI_API_KEY=your_openai_api_key
-SECRET_KEY=your_random_secret_key
 
-text
+## Sample Questions to Ask the Chatbot
 
-### Running the Application
-1. Start the application with docker-compose:
-docker-compose up
+Here are some example questions you can ask the Vahan support chatbot:
 
-text
-2. Access the web interface at http://localhost
+### About the Company
+- "What is Vahan and what does it do?"
+- "When was Vahan founded?"
+- "Where is Vahan headquartered?"
+- "How much funding has Vahan raised?"
+- "How many workers has Vahan placed in jobs?"
 
-That's it! The application will be running with both frontend and backend services.
+### Recruitment Services
+- "How does Vahan's recruitment process work?"
+- "What types of workers does Vahan help recruit?"
+- "How many placements does Vahan process per month?"
+- "What is the average fulfillment time for hiring requests?"
+- "How does Vahan source candidates?"
 
-## Prompt Engineering Approach
+### Technology
+- "How does Vahan use AI in its recruitment process?"
+- "What kind of chatbot technology does Vahan use?"
+- "How does Vahan match candidates with jobs?"
+- "What makes Vahan's technology different from traditional recruitment?"
+- "Does Vahan use machine learning to improve its services?"
 
-The chatbot uses a carefully structured prompt to generate helpful and accurate responses:
+### Programs
+- "What is the Mitra program?"
+- "How does the Mitra Leader program work?"
+- "What benefits do job seekers get from the Mitra app?"
+- "Which companies hire through the Mitra program?"
+- "How can I become a Mitra Leader?"
 
-1. **System Context**: Provides the knowledge base information to the LLM
-2. **Conversation History**: Includes previous messages for context awareness
-3. **Fallback Detection**: Identifies when the query is outside the knowledge domain
-4. **Response Formatting**: Ensures consistent and readable responses
+### Partnerships
+- "Which companies partner with Vahan?"
+- "Does Vahan work with Zomato and Swiggy?"
+- "What is Vahan's partnership with Airtel?"
+- "How many gig economy companies work with Vahan?"
+- "Does Vahan partner with training institutes?"
 
-The system prompt instructs the LLM to:
-- Always remain in the context of CloudFlow Analytics
-- Provide specific, actionable information
-- Be conversational but professional
-- Include specific details from the knowledge base when available
-- Clearly indicate when information is not available
+### Business Inquiries
+- "How can my company work with Vahan for recruitment?"
+- "What is the difference between workforce recruitment and workforce staffing?"
+- "Can Vahan handle high-volume hiring needs?"
+- "Does Vahan offer payroll management services?"
+- "What are the benefits of using Vahan compared to traditional recruitment?"
 
-## Limitations and Future Improvements
+## Configuration Options
 
-### Current Limitations
-- Limited to pre-defined knowledge base content
-- No integration with live product data
-- Limited conversation history (10 messages)
-- Basic analytics without visualization
+### OpenRouter API Configuration
 
-### Future Improvements
-1. **Enhanced Knowledge Base**:
-- Automatic updates from product documentation
-- User feedback integration for knowledge expansion
+The application uses OpenRouter to access the DeepSeek V3 language model. You can modify the model settings in `app.py`:
+   completion = client.chat.completions.create(
+   extra_headers={
+   "HTTP-Referer": "https://vahan.co",
+   "X-Title": "Vahan Support"
+   },
+   model="deepseek/deepseek-v3-base:free",
+   messages=messages,
+   max_tokens=500,
+   temperature=0.7
+   )
 
-2. **Advanced Conversation Features**:
-- Multi-language support
-- Voice input/output
-- Rich media responses (images, videos)
 
-3. **Expanded Analytics**:
-- Visual dashboard for insights
-- Sentiment analysis of conversations
-- Automatic identification of knowledge gaps
+### Knowledge Base Customization
 
-4. **Integration Capabilities**:
-- Live data from product API
-- CRM integration for personalized support
-- Ticket creation for complex issues
+Add or modify Markdown files in the `backend/knowledge_base/` directory to expand the chatbot's knowledge. The system automatically loads all `.md` files in this directory.
 
-## Sample Interaction
+## Implementation Details
 
-### User: What features does CloudFlow Analytics offer?
-**Assistant**: CloudFlow Analytics offers several powerful features to help you transform your data into actionable insights:
+### Conversation Context Management
 
-1. **Data Integration Hub**: Connect to over 50 data sources including databases, cloud storage, and business applications
-2. **Automated Processing Pipeline**: Clean and transform your data without coding
-3. **Interactive Dashboard Builder**: Create custom visualizations with drag-and-drop simplicity
-4. **AI Insights Engine**: Get automatic trend detection and anomaly alerts
-5. **Collaboration Tools**: Share reports and insights with your team
-6. **Advanced Security**: Enterprise-grade security with role-based access control
+The application uses Flask sessions to maintain conversation history between the user and the chatbot. This allows for more natural and contextual interactions:
 
-Would you like more details about any specific feature?
+   Add query to conversation history
+   session['conversation'].append({"type": "user", "content": query})
 
-### User: How much does it cost?
-**Assistant**: CloudFlow Analytics offers three flexible pricing tiers to accommodate businesses of all sizes:
+   Limit conversation history to last 10 messages
+   if len(session['conversation']) > 10:
+   session['conversation'] = session['conversation'][-10:]
 
-- **Starter Plan**: $29/month
-• 5 user accounts
-• 100GB data storage
-• Basic analytics features
-• Daily data refresh
-• Email support
 
-- **Professional Plan**: $99/month
-• 20 user accounts
-• 1TB data storage
-• Advanced analytics features
-• Hourly data refresh
-• API access
-• Phone and email support
+### Analytics Tracking
 
-- **Enterprise Plan**: $499/month
-• Unlimited users
-• 10TB storage (expandable)
-• All premium features
-• Real-time data streaming
-• Dedicated customer success manager
-• 24/7 priority support
+User interactions and feedback are stored in an SQLite database for performance analysis:
 
-All plans include a 14-day free trial, and you can save 15% with annual billing. Would you like information about add-ons or specific features included in each plan?
+   Track analytics
+      conn = get_db_connection()
+      cursor = conn.cursor()
+      cursor.execute(
+      "INSERT INTO chat_analytics (session_id, query, response, category, is_fallback) VALUES (?, ?, ?, ?, ?)",
+      (session_id, query, response, category, is_fallback)
+      )
+
+
+## Alternative LLM Providers
+
+This implementation uses DeepSeek V3 via OpenRouter, but you can easily switch to other LLM providers:
+
+- **OpenAI**: Update the base URL and API key to use OpenAI's API directly
+- **DeepSeek Direct**: Use DeepSeek's API directly if you have access
+- **Other Providers**: The code can be adapted to work with any LLM provider that offers a compatible API
+
+## Troubleshooting
+
+### API Connection Issues
+
+If you encounter problems connecting to the OpenRouter API:
+
+1. Verify your API key is correct in the `.env` file
+2. Check if you've reached your API usage limits
+3. Look for detailed error messages in the backend logs
+
+### Missing Knowledge Base Content
+
+If the chatbot fails to answer questions about Vahan:
+
+1. Ensure the `knowledge_base` directory contains Markdown files
+2. Verify the content of these files is relevant to the questions being asked
+3. Add more detailed documentation files covering specific topics
+
+## License
+
+MIT License
+
+## Credits
+
+This project was created as a demonstration of AI-powered customer support for Vahan.
+
