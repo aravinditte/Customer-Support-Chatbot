@@ -174,5 +174,5 @@ MIT License
 
 ## Credits
 
-This project was created as a demonstration of AI-powered customer support for Vahan.
+This project was created as a demonstration of AI-powered customer support for [Vahan.co](https://vahan.co/)
 
