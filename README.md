@@ -2,7 +2,7 @@
 
 A conversational AI customer support agent for Vahan, an AI-enabled recruitment and staffing platform for blue-collar workers in India. This implementation uses the DeepSeek API via OpenRouter to provide context-aware responses based on a comprehensive knowledge base.
 
-![Vahan Support Chatbot](https://i.imgur.com/example-screenshot.png)
+![Vahan Support Chatbot](demo.png)
 
 ## Features
 
