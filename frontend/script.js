@@ -6,18 +6,22 @@ let lastChatId = null;
 // Initialize the chat interface
 document.addEventListener('DOMContentLoaded', function() {
     // Set up event listeners
-    document.getElementById('sendBtn').addEventListener('click', sendMessage);
-    document.getElementById('messageInput').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            sendMessage();
-        }
-    });
-    
+    const sendBtn = document.getElementById('sendBtn');
+    if (sendBtn) sendBtn.addEventListener('click', sendMessage);
+
+    const inputEl = document.getElementById('messageInput');
+    if (inputEl) {
+        inputEl.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        // Focus on input field
+        inputEl.focus();
+    }
+
     // Set up navigation link handlers
     setupNavigationLinks();
-    
-    // Focus on input field
-    document.getElementById('messageInput').focus();
 });
 
 // Handle navigation links
@@ -59,11 +63,17 @@ function generateSessionId() {
     return 'session_' + Math.random().toString(36).substring(2, 15);
 }
 
+function getApiBase() {
+    // Fallback to same-origin if config.js missing
+    return (window && window.API_BASE_URL) ? window.API_BASE_URL : '';
+}
+
 // Send message to backend
 async function sendMessage() {
     const messageInput = document.getElementById('messageInput');
+    if (!messageInput) return;
+
     const message = messageInput.value.trim();
-    
     if (message === '') return;
     
     // Add user message to chat
@@ -77,7 +87,7 @@ async function sendMessage() {
     
     try {
         // Send message to backend
-        const response = await fetch(`${window.API_BASE_URL}/api/chat`, {
+        const response = await fetch(`${getApiBase()}/api/chat`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -118,7 +128,8 @@ async function sendMessage() {
 // Add message to chat interface
 function addMessageToChat(sender, message, chatId = null) {
     const chatMessages = document.getElementById('chatMessages');
-    
+    if (!chatMessages) return;
+
     // Create message element
     const messageElement = document.createElement('div');
     messageElement.className = `message ${sender}`;
@@ -138,11 +149,11 @@ function addMessageToChat(sender, message, chatId = null) {
         feedbackDiv.className = 'feedback';
         
         const thumbsUpBtn = document.createElement('button');
-        thumbsUpBtn.innerHTML = '<i class="fas fa-thumbs-up"></i>';
+        thumbsUpBtn.textContent = '👍';
         thumbsUpBtn.onclick = function() { provideFeedback(chatId, 1); };
         
         const thumbsDownBtn = document.createElement('button');
-        thumbsDownBtn.innerHTML = '<i class="fas fa-thumbs-down"></i>';
+        thumbsDownBtn.textContent = '👎';
         thumbsDownBtn.onclick = function() { provideFeedback(chatId, 0); };
         
         feedbackDiv.appendChild(thumbsUpBtn);
@@ -160,7 +171,8 @@ function addMessageToChat(sender, message, chatId = null) {
 // Add typing indicator
 function addTypingIndicator() {
     const chatMessages = document.getElementById('chatMessages');
-    
+    if (!chatMessages) return;
+
     const indicatorElement = document.createElement('div');
     indicatorElement.className = 'message assistant typing-indicator';
     indicatorElement.id = 'typingIndicator';
@@ -191,13 +203,13 @@ function removeTypingIndicator() {
 // Scroll to bottom of chat
 function scrollToBottom() {
     const chatMessages = document.getElementById('chatMessages');
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+    if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 // Send feedback to backend
 async function provideFeedback(chatId, rating) {
     try {
-        const response = await fetch(`${window.API_BASE_URL}/api/feedback`, {
+        const response = await fetch(`${getApiBase()}/api/feedback`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -225,6 +237,8 @@ async function provideFeedback(chatId, rating) {
 
 // Function to ask predefined questions
 function askQuestion(question) {
-    document.getElementById('messageInput').value = question;
+    const input = document.getElementById('messageInput');
+    if (!input) return;
+    input.value = question;
     sendMessage();
 }
