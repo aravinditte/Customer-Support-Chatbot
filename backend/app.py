@@ -14,7 +14,8 @@ load_dotenv()
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app)
+# Enable CORS for all routes
+CORS(app, origins=['*'], supports_credentials=True)
 app.secret_key = os.getenv("SECRET_KEY", "dataforge-support-secret-key")
 
 # Clear any proxy environment variables that might be causing issues
