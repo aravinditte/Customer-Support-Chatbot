@@ -77,7 +77,7 @@ async function sendMessage() {
     
     try {
         // Send message to backend
-        const response = await fetch('http://localhost:5000/api/chat', {
+        const response = await fetch(`${window.API_BASE_URL}/api/chat`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -197,7 +197,7 @@ function scrollToBottom() {
 // Send feedback to backend
 async function provideFeedback(chatId, rating) {
     try {
-        const response = await fetch('http://localhost:5000/api/feedback', {
+        const response = await fetch(`${window.API_BASE_URL}/api/feedback`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
