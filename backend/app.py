@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, session
 from flask_cors import CORS
-import os, sqlite3
+import os, re, sqlite3
 from dotenv import load_dotenv
 from openai import OpenAI
 import httpx
@@ -15,7 +15,6 @@ OPENROUTER_API_KEY = os.getenv('OPENROUTER_API_KEY')
 if not OPENROUTER_API_KEY:
     raise RuntimeError('OPENROUTER_API_KEY is not set')
 
-# OpenRouter via OpenAI SDK
 client = OpenAI(
     base_url='https://openrouter.ai/api/v1',
     api_key=OPENROUTER_API_KEY,
@@ -47,7 +46,6 @@ def init_db():
 init_db()
 
 # ------------------ KB ------------------
-# Load all markdown files into memory once; DO NOT modify files.
 
 def load_kb():
     kb_dir = 'knowledge_base'
@@ -63,37 +61,48 @@ def load_kb():
 KB = load_kb()
 KB_KEYS = list(KB.keys())
 
-# Simple retrieval (no deps): rank by token overlap, fallback to first N files.
+# Normalize and tokenize query/content for better overlap
+_WORD_RE = re.compile(r"[a-z0-9]+")
+STOP = set(['the','a','an','is','are','and','or','to','of','for','with','on','in','how','what','does','do','i','you','we'])
+
+def tokenize(text: str):
+    return [w for w in _WORD_RE.findall(text.lower()) if w not in STOP]
+
+# Improved retrieval: Jaccard similarity with title boost
 
 def retrieve(query: str, top_n: int = 3) -> str:
-    q = query.lower().split()
+    q_tokens = set(tokenize(query))
     scored = []
-    for k, v in KB.items():
-        text = v.lower()
-        score = sum(1 for t in q if t and t in text)
-        if score:
-            scored.append((score, k, v))
-    if not scored:
-        # if no overlap, still provide helpful context: first N topics
+    for key, content in KB.items():
+        c_tokens = set(tokenize(content))
+        inter = len(q_tokens & c_tokens)
+        union = len(q_tokens | c_tokens) or 1
+        jacc = inter / union
+        # Title boost if any query word appears in the topic key
+        title_boost = 0.1 if any(t in key.lower() for t in q_tokens) else 0.0
+        score = jacc + title_boost
+        scored.append((score, key, content))
+    scored.sort(reverse=True)
+    top = [item for item in scored if item[0] > 0][:top_n]
+    if not top:
+        # if no overlap at all, still give the first N topics to avoid empty context
         sel = KB_KEYS[:top_n]
         return '\n\n'.join(f"### {k}\n{KB[k]}" for k in sel)
-    scored.sort(reverse=True)
-    top = scored[:top_n]
     return '\n\n'.join(f"### {k}\n{content}" for _, k, content in top)
 
-# Lightweight category to help LLM; does not change behavior if not matched.
+# Category hint
 
 def categorize(q: str) -> str:
     table = {
-        'product': ['what is','overview','about','platform','dataforge'],
-        'features': ['features','capabilities','integration','dashboard','model','ai','predictive','real-time','export'],
+        'product': ['overview','about','platform','dataforge'],
+        'features': ['feature','capabilities','integration','dashboard','model','models','ai','predictive','realtime','real','time','export'],
         'pricing': ['pricing','price','cost','plan','tier','trial','billing'],
-        'getting_started': ['getting started','how do i get started','setup','onboarding','connect','create first'],
-        'api': ['api','endpoint','rest','webhook','docs'],
+        'getting_started': ['getting','started','setup','onboarding','connect','create','first'],
+        'api': ['api','endpoint','rest','webhook','docs','documentation'],
         'security': ['security','compliance','soc','gdpr','encryption'],
         'support': ['support','contact','email','help']
     }
-    l = q.lower()
+    l = tokenize(q)
     for cat, keys in table.items():
         if any(k in l for k in keys):
             return cat
@@ -101,8 +110,8 @@ def categorize(q: str) -> str:
 
 SYSTEM_PREFIX = (
   "You are the official customer support assistant for DataForge AI. "
-  "Answer strictly using ONLY the provided Context. If the answer is not present in Context, say: "
-  "'I don’t have that in my documentation. Please contact support.' Do not invent details."
+  "Use ONLY the provided Context to answer. If the answer isn’t in Context, reply: "
+  "'I don’t have that in my documentation. Please contact support.'"
 )
 
 # ------------------ LLM ------------------
@@ -113,7 +122,6 @@ def llm_answer(query: str, history: list):
         { 'role': 'system', 'content': f"{SYSTEM_PREFIX}\n\nContext:\n{context}" },
         { 'role': 'user', 'content': f"Category: {categorize(query)}" },
     ]
-    # Short history window to avoid repetition
     for m in (history or [])[-4:]:
         messages.append({ 'role': 'user' if m.get('type')=='user' else 'assistant', 'content': m.get('content','') })
     messages.append({ 'role': 'user', 'content': query })
@@ -123,30 +131,27 @@ def llm_answer(query: str, history: list):
             model='deepseek/deepseek-v3:free',
             messages=messages,
             max_tokens=600,
-            temperature=0.1,
-            frequency_penalty=0.4,
+            temperature=0.2,
+            frequency_penalty=0.2,
             presence_penalty=0,
-            extra_headers={
-              'HTTP-Referer': 'https://dataforge.ai',
-              'X-Title': 'DataForge AI Support'
-            }
+            extra_headers={ 'HTTP-Referer': 'https://dataforge.ai', 'X-Title': 'DataForge AI Support' }
         )
         txt = res.choices[0].message.content
         return txt, 0
     except Exception as e:
         print('OpenRouter error:', e)
-        # graceful but specific fallbacks to avoid same text
+        # fallback varies per category to avoid identical replies
         cat = categorize(query)
-        fallbacks = {
+        fb = {
           'getting_started': "I don’t have setup details in my documentation. Please contact support.",
           'pricing': "Pricing details aren’t in my documentation. Please contact sales or support.",
           'features': "Feature specifics aren’t listed in my documentation. Please contact support.",
           'api': "API details aren’t available in my documentation. Please contact support.",
           'security': "Security/compliance details aren’t available in my documentation. Please contact support.",
-          'product': "A general product overview isn’t available in my documentation. Please contact support.",
+          'product': "I don’t have a product overview in my documentation. Please contact support.",
           'other': "I don’t have that in my documentation. Please contact support."
         }
-        return fallbacks.get(cat, fallbacks['other']), 1
+        return fb.get(cat, fb['other']), 1
 
 # ------------------ API ------------------
 
