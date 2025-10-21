@@ -1,72 +1,90 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DataForge AI - Customer Support</title>
-    <link rel="stylesheet" href="styles.css">
-    <!-- Removed Font Awesome CDN to avoid visual diffs if not originally used -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DataForge AI Support</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="logo">
-                <span>DataForge AI Support</span>
-            </div>
-            <nav class="nav">
-                <a href="#" class="nav-link">Analytics</a>
-                <a href="#" class="nav-link">Chat History</a>
-                <a href="#" class="nav-link">Help</a>
-            </nav>
-        </header>
-
-        <!-- Chat Container -->
-        <div class="chat-container">
-            <!-- Welcome Message -->
-            <div class="welcome-message">
-                <h2>Welcome to DataForge AI Support</h2>
-                <p>I'm here to help you with any questions about DataForge AI. Feel free to ask me about our features, pricing, integrations, or anything else!</p>
-                
-                <!-- Quick Start Questions -->
-                <div class="quick-questions">
-                    <h3>Quick Start Questions:</h3>
-                    <div class="question-buttons">
-                        <button onclick="askQuestion('What is DataForge AI?')">What is DataForge AI?</button>
-                        <button onclick="askQuestion('What features does DataForge AI offer?')">Features & Capabilities</button>
-                        <button onclick="askQuestion('How much does DataForge AI cost?')">Pricing Information</button>
-                        <button onclick="askQuestion('How do I get started with DataForge AI?')">Getting Started</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Chat Messages -->
-            <div class="chat-messages" id="chatMessages">
-                <!-- Messages will be added here dynamically -->
-            </div>
-
-            <!-- Chat Input -->
-            <div class="chat-input">
-                <div class="input-container">
-                    <input type="text" id="messageInput" placeholder="Type your message here..." autocomplete="off">
-                    <button id="sendBtn" type="button">
-                        <span>Send</span>
-                    </button>
-                </div>
-            </div>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">DF</div>
+        <div class="brand-text">
+          <h1>DataForge AI</h1>
+          <p>Customer Support</p>
         </div>
-    </div>
+      </div>
+      <nav class="menu">
+        <button class="menu-item active" data-view="chat">Chat</button>
+        <button class="menu-item" data-view="history">History</button>
+        <button class="menu-item" data-view="analytics">Analytics</button>
+      </nav>
+      <div class="sidebar-footer">
+        <button id="newChatBtn" class="secondary">New Chat</button>
+      </div>
+    </aside>
 
-    <!-- Modal for navigation links -->
-    <div class="modal" id="modal" style="display: none;">
-        <div class="modal-content">
-            <p>This feature is not available in the demo version.</p>
-            <button class="modal-close" onclick="closeModal()">Close</button>
+    <main class="main">
+      <header class="topbar">
+        <div class="breadcrumbs">
+          <span id="viewTitle">Chat</span>
         </div>
-    </div>
+        <div class="actions">
+          <button id="refreshBtn" class="icon-btn" title="Refresh">↻</button>
+        </div>
+      </header>
 
-    <!-- Load config first, then app script for predictable ordering without affecting styles -->
-    <script src="config.js"></script>
-    <script src="script.js"></script>
+      <section class="content" id="chatView">
+        <div class="welcome">
+          <h2>Welcome to DataForge AI Support</h2>
+          <p>Ask anything about features, pricing, setup, integrations, and more.</p>
+          <div class="suggestions" id="suggestions"></div>
+        </div>
+        <div class="messages" id="chatMessages"></div>
+        <div class="composer">
+          <textarea id="messageInput" rows="1" placeholder="Type your message... "></textarea>
+          <button id="sendBtn" class="primary">Send</button>
+        </div>
+      </section>
+
+      <section class="content hidden" id="historyView">
+        <div class="panel">
+          <div class="panel-header">
+            <h3>Chat History</h3>
+            <div class="panel-actions">
+              <button id="loadHistoryBtn" class="secondary">Load History</button>
+            </div>
+          </div>
+          <div id="historyList" class="list"></div>
+        </div>
+      </section>
+
+      <section class="content hidden" id="analyticsView">
+        <div class="grid">
+          <div class="card">
+            <h4>Categories</h4>
+            <div id="categories" class="kpis"></div>
+          </div>
+          <div class="card">
+            <h4>Fallback Rate</h4>
+            <div id="fallbackRate" class="big-number">—</div>
+          </div>
+          <div class="card">
+            <h4>Avg. Satisfaction</h4>
+            <div id="avgSatisfaction" class="big-number">—</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+  <script src="analytics.js"></script>
 </body>
 </html>
